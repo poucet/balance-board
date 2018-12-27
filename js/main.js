@@ -1,5 +1,11 @@
 'use strict';
 
+function clamp(v, l, h) {
+  if (v < l) { return l; }
+  else if (v > h) { return h; }
+  else { return v; }
+}
+
 class Canvas {
   constructor(window, elem) {
     this._elem = elem;
@@ -66,10 +72,8 @@ class Ball {
 
   orient(event) {
     this.alpha = event.alpha;
-    this.beta = event.beta / 90;
-    if (this.beta > 1) { this.beta = 1; }
-    if (this.beta < -1) { this.beta = -1; }
-    this.gamma = event.gamma / 90;
+    this.beta = clamp(event.beta / 90, -1, 1);
+    this.gamma = clamp(event.gamma / 90, -1, 1);
     console.log(event);
   }
 
