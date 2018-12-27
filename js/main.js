@@ -6,6 +6,10 @@ function clamp(v, l, h) {
   else { return v; }
 }
 
+function sigmoid(x) {
+  return 2 / (1 + Math.exp(-5 * x)) - 1;
+}
+
 class Canvas {
   constructor(window, elem) {
     this._elem = elem;
@@ -72,8 +76,8 @@ class Ball {
 
   orient(event) {
     this.alpha = event.alpha;
-    this.beta = clamp(event.beta / 90, -1, 1);
-    this.gamma = clamp(event.gamma / 90, -1, 1);
+    this.beta = sigmoid(clamp(event.beta / 90, -1, 1));
+    this.gamma = sigmoid(clamp(event.gamma / 90, -1, 1));
     console.log(event);
   }
 
