@@ -1,0 +1,9 @@
+body {
+  background-color: lightgrey;
+}
+
+canvas.display {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+}
