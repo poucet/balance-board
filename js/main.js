@@ -1,31 +1,28 @@
 'use strict';
 
 class Canvas {
-  constructor(elem) {
-    this.elem = elem;
+  constructor(window, elem) {
+    this._elem = elem;
     this.context = elem.getContext('2d');
     this.objects = [];
+    this.resize(window.innerWidth, window.innerHeight)
+    window.addEventListener('resize', (event) => this.resize(window.innerWidth, window.innerHeight), false);
   }
 
-  initialize(window) {
-    window.addEventListener('resize', (event) => this.resize(window), false);
-    this.resize(window);
-    this.clear();
-  }
 
-  add(o) {
-    this.objects.push(o);
-  }
+  get width() { return this._elem.width; }
+  get height() { return this._elem.width; }
 
-  resize(window) {
-    this.elem.width = window.innerWidth;
-    this.elem.height = window.innerHeight;
+  resize(w, h) {
+    this._elem.width = w;
+    this._elem.height = h;
   }
+  add(o) { this.objects.push(o); }
 
   clear() {
     var ctx = this.context;
     ctx.beginPath();
-    ctx.rect(0, 0, this.elem.width, this.elem.height);
+    ctx.rect(0, 0, this.width, this.height);
     ctx.fillStyle = "black";
     ctx.fill();
   }
@@ -34,7 +31,7 @@ class Canvas {
     this.clear();
     var ctx = this.context;
     for (var o of this.objects) {
-      o.draw(ctx);
+      o.draw(this);
     }
   }
 }
@@ -46,7 +43,8 @@ class Circle {
     this.r = r;
   }
 
-  draw(ctx) {
+  draw(canvas) {
+    var ctx = canvas.context;
     ctx.beginPath();
     ctx.arc(this.x, this.y, this.r, 0, 2*Math.PI);
     ctx.fillStyle = "red";
@@ -54,19 +52,44 @@ class Circle {
   }
 }
 
-class InteractiveCircle extends Circle {
-  initialize(window) {
+class Ball {
+  constructor(window, r) {
+    this.alpha = 0;
+    this.beta = 0;
+    this.gamma = 0;
+    this.w = window.innerWidth;
+    this.h = window.innerHeight;
+    this.r = r;
     window.addEventListener('deviceorientation', (event) => this.orient(event), true);
+    window.addEventListener('resize', (event) => this.resize(window.innerWidth, window.innerHeight), false);
   }
 
   orient(event) {
-    console.log('yay');
+    this.alpha = event.alpha;
+    this.beta = event.beta / 90;
+    if (this.beta > 1) { this.beta = 1; }
+    if (this.beta < -1) { this.beta = -1; }
+    this.gamma = event.gamma / 90;
     console.log(event);
+  }
+
+  resize(w, h) {
+    this.w = w;
+    this.h = h;
+  }
+
+  draw(canvas) {
+    var ctx = canvas.context;
+    ctx.beginPath();
+    ctx.arc(this.w/2 * (1 + this.beta), this.h/2 * (1 + this.gamma), this.r, 0, 2*Math.PI);
+    ctx.fillStyle = "red";
+    ctx.fill();
   }
 }
 
 var C;
 var O;
+var R;
 
 function animloop(f) {
   function step() {
@@ -77,10 +100,8 @@ function animloop(f) {
 }
 
 function onload() {
-  C = new Canvas(document.getElementById('display'));
-  C.initialize(window);
-  O = new InteractiveCircle(50, 50, 20);
-  O.initialize(window);
-  C.add(O);
+  C = new Canvas(window, document.getElementById('display'));
+  var ball = new Ball(window, 20);
+  C.add(ball);
   animloop(() => C.redraw());
 }
