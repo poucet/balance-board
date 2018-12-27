@@ -81,7 +81,7 @@ class Ball {
   draw(canvas) {
     var ctx = canvas.context;
     ctx.beginPath();
-    ctx.arc(this.w/2 * (1 + this.beta), this.h/2 * (1 + this.gamma), this.r, 0, 2*Math.PI);
+    ctx.arc(this.w/2 * (1 + this.gamma), this.h/2 * (1 + this.beta), this.r, 0, 2*Math.PI);
     ctx.fillStyle = "red";
     ctx.fill();
   }
