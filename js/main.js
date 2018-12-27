@@ -11,7 +11,7 @@ class Canvas {
 
 
   get width() { return this._elem.width; }
-  get height() { return this._elem.width; }
+  get height() { return this._elem.height; }
 
   resize(w, h) {
     this._elem.width = w;
